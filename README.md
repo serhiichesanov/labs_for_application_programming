@@ -1,6 +1,6 @@
 # README
 ## Deployment on GNU/Linux
-1. Install [pyenv] (installation differs depending on distribution)
+1. Install [pyenv](https://github.com/pyenv/pyenv) (installation differs depending on distribution)
 2. Install python 3.8.12 using pyenv: `pyenv install 3.8.12`
 3. Clone repository: `git clone https://github.com/cubook1/labs_for_application_programming`
 4. `cd` into cloned repository and run `pip install pipenv`
