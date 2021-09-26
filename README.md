@@ -1,5 +1,5 @@
 # README
-## Project deployment
+## Deployment on GNU/Linux
 1. Clone this project: `git clone https://github.com/cubook1/labs_for_application_programming`
 2. `cd` into cloned repo and run `bash deploy.sh all` to execute all stages of deployment.
 
@@ -14,3 +14,6 @@
 	To deactivate virtual environment run `exit`
 4. Run `pipenv install` in virtual environment to install project dependencies.
 5. You are ready to go!
+
+## Deployment of Windows 10
+1. Use [wsl2](https://docs.microsoft.com/en-us/windows/wsl/install-manual)
