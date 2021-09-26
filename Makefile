@@ -13,5 +13,5 @@ check-python-path:
 gunicorn-run: main.py wsgi.py
 	gunicorn --bind $(ADDR):$(PORT) wsgi:app
 
-get-http-code: gunicorn-run
+get-http-code:
 	curl -v http://$(ADDR):$(PORT)/api/v1/hello-world-$(VAR)
