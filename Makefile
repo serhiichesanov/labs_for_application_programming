@@ -2,8 +2,6 @@ ADDR = localhost
 PORT = 5000
 VAR = 4
 
-all: enable-env disable-env check-py-version check-py-path gunicorn-run get_http-code
-
 check-python-version:
 	python -V
 
