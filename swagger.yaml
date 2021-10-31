@@ -1,0 +1,446 @@
+openapi: 3.0.1
+info:
+  title: Store API
+  description: Simple store API.
+  version: 1.0.0
+  
+servers:
+  - url: http://api.store.com/SerhiiChesanov
+    description: Main store server
+  
+tags:
+- name: user
+  description: Operations about user
+- name: credit
+  description: All about your credits
+- name: budget
+  description: Total budget
+  
+paths:
+  /user:
+      post:
+        tags:
+        - user
+        summary: Create user
+        description: This can only be done by the logged in user.
+        operationId: createUser
+        requestBody:
+          description: Created user object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+          required: true
+        responses:
+          200:
+            description: successful operation
+            content: {}
+          400:
+            description: bad request
+            content: {}
+  /user/login:
+    get:
+      tags:
+      - user
+      summary: Logs user into the system
+      operationId: loginUser
+      parameters:
+      - name: username
+        in: query
+        description: The user name for login
+        required: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        description: The password for login in clear text
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        400:
+          description: Invalid username/password supplied
+          content: {}
+  /user/logout:
+    get:
+      tags:
+      - user
+      summary: Logs out current logged in user session
+      operationId: logoutUser
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /user/{userId}:
+    put:
+      tags:
+      - user
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+      - name: userId
+        in: path
+        description: name that need to be updated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content: {}
+        400:
+          description: Invalid user supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+      security:
+          - store_auth:
+            - put:users
+    get:
+      tags:
+      - user
+      summary: Get user by user name
+      operationId: getUserByName
+      parameters:
+      - name: userId
+        in: path
+        description: 'The name that needs to be fetched'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid username supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid username supplied
+          content: {}
+        '404':
+          description: User not found
+          content: {}
+      security:
+          - store_auth:
+            - delete:users
+  /credit:
+      post:
+        tags:
+        - credit
+        summary: Create credit
+        description: This can only be done by the logged in user.
+        operationId: createCredit
+        requestBody:
+          description: Created credit object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credit'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Credit'
+          required: true
+        responses:
+          200:
+            description: successful operation
+            content: {}
+          400:
+            description: bad request
+            content: {}
+        security:
+          - store_auth:
+            - post:credit
+  /credit/repay{creditId}:
+      post:
+        tags:
+        - credit
+        summary: Repay credit
+        description: This can only be done by the logged in user.
+        parameters:
+        - name: creditId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: cardNum
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: cvv
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: fullName
+          in: query
+          required: true
+          schema:
+            type:
+              string
+        responses:
+          200:
+            description: successful operation
+            content: {}
+          400:
+            description: bad request
+            content: {}
+        security:
+          - store_auth:
+            - repay:credit
+  /credit/{creditId}:
+    get:
+      tags:
+      - credit
+      summary: Find credit by ID
+      description: For valid response try integer IDs with value >= 1.         Other values will generated exceptions
+      operationId: getCreditById
+      parameters:
+      - name: creditId
+        in: path
+        description: ID of credit that needs to be fetched
+        required: true
+        schema:
+          minimum: 1.0
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Credit'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credit'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Credit not found
+          content: {}
+    put:
+          tags:
+          - credit
+          summary: Update credit by ID
+          description: This can only be done by the logged in user.
+          operationId: updateCredit
+          parameters:
+          - name: creditId
+            in: path
+            description: ID of credit that needs to be fetched
+            required: true
+            schema:
+              type: string
+          requestBody:
+            description: Updated user object
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Credit'
+              application/xml:
+                schema:
+                  $ref: '#/components/schemas/Credit'
+            required: true
+          responses:
+            200:
+              description: Success
+            400:
+              description: Invalid ID supplied
+              content: {}
+            404:
+              description: Credit not found
+              content: {}
+          security:
+            - store_auth:
+              - read:users
+    delete:
+      tags:
+      - credit
+      summary: Delete payed credit by ID
+      description: For valid response try integer IDs with positive integer value.         Negative
+        or non-integer values will generate API errors
+      operationId: deleteCredit
+      parameters:
+      - name: creditId
+        in: path
+        description: ID of the credit that needs to be deleted
+        required: true
+        schema:
+          minimum: 1.0
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          content: {}
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Credit not found
+          content: {}
+      security:
+        - store_auth:
+          - read:users
+  /budget:
+    post:
+      tags:
+        - budget
+      summary: Create budget
+      description: This can only be done by the admin.
+      parameters:
+      - name: budgetSum
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Budget'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        400:
+          description: bad request
+          content: {}
+      security:
+          - store_auth:
+            - admin
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        income:
+          type: integer
+        credits:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Credit'
+      xml:
+        name: User
+    Credit:
+      type: object
+      properties:
+        creditId:
+          type: integer
+          format: int64
+        creditAmount:
+          type: integer
+          format: int64
+        rate:
+          type: integer
+          enum: [30]
+        dateOfCreation:
+          type: string
+          format: date-time
+        term:
+          type: string
+          format: date-time
+    Budget:
+      type: object
+      properties:
+        budgetSum:
+          type: integer
+        credits:
+          type: array
+          items:
+             $ref: '#/components/schemas/Credit'
+          
+          
+      
+  securitySchemes:
+    store_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://api.store.com/oauth/dialog
+          scopes:
+            read:users: read users
+            put:users: put users
+            delete:users: delete users
+            write:credit: write credits
+            post:credit: creates credit
+            repay:credit: repays credit
+            admin: admin priviledges
+          
+        
+        
